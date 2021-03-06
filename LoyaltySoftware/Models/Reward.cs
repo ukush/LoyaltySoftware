@@ -10,6 +10,6 @@ namespace LoyaltySoftware.Models
         public static int rewardId { get; set; }
         public static string rewardName { get; set; }
         public static int pointsToClaim { get; set; }
-        public static string description { get; set; }
+        public static string rewardDescription { get; set; }
     }
 }

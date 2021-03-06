@@ -8,7 +8,7 @@ namespace LoyaltySoftware.Models
     public class Tier
     {
         public static string tierName { get; set; }
-        public static string description { get; set; }
+        public static string tierDescription { get; set; }
         public static int pointsNeeded { get; set; }
     }
 }

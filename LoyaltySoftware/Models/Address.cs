@@ -11,7 +11,7 @@ namespace LoyaltySoftware.Models
         public static string country { get; set; }
         public static string county { get; set; }
         public static string streetName { get; set; }
-        public static int streetNumber { get; set; }
+        public static string streetNumber { get; set; }
         public static string postcode { get; set; }
     }
 }

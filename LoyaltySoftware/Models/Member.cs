@@ -13,7 +13,7 @@ namespace LoyaltySoftware.Models
         public static string dateOfBirth { get; set; }
         public static int telephone { get; set; }
         public static string email { get; set; }
-        public static DateTime creattion_timestamp { get; set; }
+        public static DateTime creation_timestamp { get; set; }
         public static bool inNewMember { get; set; }
         public static int points { get; set; }
     }
