@@ -26,7 +26,7 @@ namespace LoyaltySoftware.Pages.Login
         public IActionResult OnPost()
         {
             DBConnection dbstring = new DBConnection(); //creating an object from the class
-            string DbConnection = dbstring.DbString(); //calling the method from the class
+            string DbConnection = dbstring.DatabaseString(); //calling the method from the class
             Console.WriteLine(DbConnection);
             SqlConnection conn = new SqlConnection(DbConnection);
             conn.Open();
@@ -37,7 +37,7 @@ namespace LoyaltySoftware.Pages.Login
             using (SqlCommand command = new SqlCommand())
             {
                 command.Connection = conn;
-                command.CommandText = @"SELECT id, username, password, user_role FROM User WHERE userID = @UID, username = @UName, password = @Pwd AND userRole = @URole";
+                command.CommandText = @"SELECT id, username, password, user_role FROM UserAccount WHERE id = @UID, username = @UName, password = @Pwd AND user_role = @URole";
 
                 command.Parameters.AddWithValue("@UID", UserAccount.UserID);
                 command.Parameters.AddWithValue("@UName", UserAccount.Username);
@@ -59,7 +59,7 @@ namespace LoyaltySoftware.Pages.Login
                     SessionID = HttpContext.Session.Id;
                     HttpContext.Session.SetString("sessionID", SessionID);
                     HttpContext.Session.SetString("username", UserAccount.Username);
-                    HttpContext.Session.SetString("fname", UserAccount.Password);
+                    HttpContext.Session.SetString("password", UserAccount.Password);
 
                     if (!UserAccount.checkIfUsernameExists(UserAccount.Username))
                     {
@@ -97,3 +97,4 @@ namespace LoyaltySoftware.Pages.Login
         }
     }
 }
+
