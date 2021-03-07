@@ -31,49 +31,49 @@ namespace LoyaltySoftware.Pages.Login
             SqlConnection conn = new SqlConnection(DbConnection);
             conn.Open();
 
-            Console.WriteLine(UserAccount.username);
-            Console.WriteLine(UserAccount.password);
+            Console.WriteLine(UserAccount.Username);
+            Console.WriteLine(UserAccount.Password);
 
             using (SqlCommand command = new SqlCommand())
             {
                 command.Connection = conn;
                 command.CommandText = @"SELECT id, username, password, user_role FROM User WHERE userID = @UID, username = @UName, password = @Pwd AND userRole = @URole";
 
-                command.Parameters.AddWithValue("@UID", UserAccount.userID);
-                command.Parameters.AddWithValue("@UName", UserAccount.username);
-                command.Parameters.AddWithValue("@Pwd", UserAccount.password);
-                command.Parameters.AddWithValue("@URole", UserAccount.userRole);
+                command.Parameters.AddWithValue("@UID", UserAccount.UserID);
+                command.Parameters.AddWithValue("@UName", UserAccount.Username);
+                command.Parameters.AddWithValue("@Pwd", UserAccount.Password);
+                command.Parameters.AddWithValue("@URole", UserAccount.UserRole);
 
                 var reader = command.ExecuteReader();
 
                 while (reader.Read())
                 {
-                    UserAccount.userID = reader.GetInt32(0);
-                    UserAccount.username = reader.GetString(1);
-                    UserAccount.password = reader.GetString(2);
-                    UserAccount.userRole = reader.GetString(3);
+                    UserAccount.UserID = reader.GetInt32(0);
+                    UserAccount.Username = reader.GetString(1);
+                    UserAccount.Password = reader.GetString(2);
+                    UserAccount.UserRole = reader.GetString(3);
                 }
 
-                if (!string.IsNullOrEmpty(UserAccount.userID.ToString()))
+                if (!string.IsNullOrEmpty(UserAccount.UserID.ToString()))
                 {
                     SessionID = HttpContext.Session.Id;
                     HttpContext.Session.SetString("sessionID", SessionID);
-                    HttpContext.Session.SetString("username", UserAccount.username);
-                    HttpContext.Session.SetString("fname", UserAccount.password);
+                    HttpContext.Session.SetString("username", UserAccount.Username);
+                    HttpContext.Session.SetString("fname", UserAccount.Password);
 
-                    if (!UserAccount.checkIfUsernameExists(UserAccount.username))
+                    if (!UserAccount.checkIfUsernameExists(UserAccount.Username))
                     {
                         Message = "Username does not exist!";
                         return Page();
                     }
-                    else if (!UserAccount.checkPassword(UserAccount.username, UserAccount.password))
+                    else if (!UserAccount.checkPassword(UserAccount.Username, UserAccount.Password))
                     {
                         Message = "Password does not match!";
                         return Page();
                     }
                     else
                     {
-                        if (UserAccount.checkRole(UserAccount.userRole) == "member")
+                        if (UserAccount.checkRole(UserAccount.UserRole) == "member")
                         {
                             return RedirectToPage("/MemberPages/Dashboard");
                         }
