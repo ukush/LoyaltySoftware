@@ -4,6 +4,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using LoyaltySoftware.Models;
+using LoyaltySoftware.Pages.Shared;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -24,8 +25,8 @@ namespace LoyaltySoftware.Pages.Login
 
         public IActionResult OnPost()
         {
-            DatabaseConnect dbstring = new DatabaseConnect(); //creating an object from the class
-            string DbConnection = dbstring.DatabaseString(); //calling the method from the class
+            DBConnection dbstring = new DBConnection(); //creating an object from the class
+            string DbConnection = dbstring.DbString(); //calling the method from the class
             Console.WriteLine(DbConnection);
             SqlConnection conn = new SqlConnection(DbConnection);
             conn.Open();
@@ -36,7 +37,7 @@ namespace LoyaltySoftware.Pages.Login
             using (SqlCommand command = new SqlCommand())
             {
                 command.Connection = conn;
-                command.CommandText = @"SELECT , , , UserRole FROM User WHERE userID = @UID, username = @UName, password = @Pwd AND userRole = @URole";
+                command.CommandText = @"SELECT id, username, password, user_role FROM User WHERE userID = @UID, username = @UName, password = @Pwd AND userRole = @URole";
 
                 command.Parameters.AddWithValue("@UID", UserAccount.userID);
                 command.Parameters.AddWithValue("@UName", UserAccount.username);
@@ -62,12 +63,12 @@ namespace LoyaltySoftware.Pages.Login
 
                     if (!UserAccount.checkIfUsernameExists(UserAccount.username))
                     {
-                        Message = "Username does not exists!";
+                        Message = "Username does not exist!";
                         return Page();
                     }
                     else if (!UserAccount.checkPassword(UserAccount.username, UserAccount.password))
                     {
-                        Message = "Username does not exists!";
+                        Message = "Password does not match!";
                         return Page();
                     }
                     else
@@ -84,8 +85,15 @@ namespace LoyaltySoftware.Pages.Login
 
 
                 }
-               
+                else
+                {
+                    Message = "Username does not exist!";
+                    return Page();
+                }
+
 
 
             }
+        }
+    }
 }
