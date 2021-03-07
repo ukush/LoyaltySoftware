@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace LoyaltySoftware.Pages.Login
 {
-    public class loginModel : PageModel
+    public class AdminLoginModel : PageModel
     {
         public void OnGet()
         {
