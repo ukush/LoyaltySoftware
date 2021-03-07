@@ -10,7 +10,9 @@ namespace LoyaltySoftware.Models
     public class UserAccount
     {
         public static int UserID { get; set; }
+        [Required]
         public static string Username { get; set; }
+        [Required]
         public static string Password { get; set; }
         public static string Status { get; set; }
 
