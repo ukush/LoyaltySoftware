@@ -12,9 +12,10 @@ namespace LoyaltySoftware.Models
         public static int UserID { get; set; }
         [Required]
         [Display(Name = "User Name")]
-        public static string Username { get; set; }
+        public string Username { get; set; }
         [Required]
         [Display(Name = "Password")]
+        public string Password { get; set; }
         public static string Status { get; set; }
 
         public static string UserRole { get; set; }
