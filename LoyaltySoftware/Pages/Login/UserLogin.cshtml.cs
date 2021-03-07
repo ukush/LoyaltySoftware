@@ -1,99 +1,72 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
-using LoyaltySoftware.Models;
-using LoyaltySoftware.Pages.Shared;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace LoyaltySoftware.Pages.Login
+namespace LoyaltySoftware.Models
 {
-    public class loginModel : PageModel
+    
+    public class UserAccount
     {
-        [BindProperty]
-        public UserAccount UserAccount { get; set; }
-        public string Message { get; set; }
-        public string SessionID;
+        public static int UserID { get; set; }
+        public static string Username { get; set; }
+        public static string Password { get; set; }
+        public static string Status { get; set; }
 
+        public static string UserRole { get; set; }
 
-        public void OnGet()
+        static string[] UserRoles = new string[] { "member", "admin" };
+        static string[] UserStatuses = new string[] { "active", "suspended", "revoked" };
+        public static Dictionary<string, string> accounts = new Dictionary<string, string>();
+
+        public static void AddAccount(string username, string password)
         {
+            if(!accounts.ContainsKey(username))
+            {
+                accounts.Add(username, password);
+            }
+            else
+            {
+                Console.WriteLine("Username already exists.");
+            }
         }
 
-        public IActionResult OnPost()
+        public static string checkRole(string userRole)
         {
-            DBConnection dbstring = new DBConnection(); //creating an object from the class
-            string DbConnection = dbstring.DbString(); //calling the method from the class
-            Console.WriteLine(DbConnection);
-            SqlConnection conn = new SqlConnection(DbConnection);
-            conn.Open();
-
-            Console.WriteLine(UserAccount.username);
-            Console.WriteLine(UserAccount.password);
-
-            using (SqlCommand command = new SqlCommand())
+            foreach(string possibleRole in UserRoles)
             {
-                command.Connection = conn;
-                command.CommandText = @"SELECT id, username, password, user_role FROM User WHERE userID = @UID, username = @UName, password = @Pwd AND userRole = @URole";
-
-                command.Parameters.AddWithValue("@UID", UserAccount.userID);
-                command.Parameters.AddWithValue("@UName", UserAccount.username);
-                command.Parameters.AddWithValue("@Pwd", UserAccount.password);
-                command.Parameters.AddWithValue("@URole", UserAccount.userRole);
-
-                var reader = command.ExecuteReader();
-
-                while (reader.Read())
-                {
-                    UserAccount.userID = reader.GetInt32(0);
-                    UserAccount.username = reader.GetString(1);
-                    UserAccount.password = reader.GetString(2);
-                    UserAccount.userRole = reader.GetString(3);
-                }
-
-                if (!string.IsNullOrEmpty(UserAccount.userID.ToString()))
-                {
-                    SessionID = HttpContext.Session.Id;
-                    HttpContext.Session.SetString("sessionID", SessionID);
-                    HttpContext.Session.SetString("username", UserAccount.username);
-                    HttpContext.Session.SetString("fname", UserAccount.password);
-
-                    if (!UserAccount.checkIfUsernameExists(UserAccount.username))
-                    {
-                        Message = "Username does not exist!";
-                        return Page();
-                    }
-                    else if (!UserAccount.checkPassword(UserAccount.username, UserAccount.password))
-                    {
-                        Message = "Password does not match!";
-                        return Page();
-                    }
-                    else
-                    {
-                        if (UserAccount.checkRole(UserAccount.userRole) == "member")
-                        {
-                            return RedirectToPage("/MemberPages/Dashboard");
-                        }
-                        else
-                        {
-                            return RedirectToPage("/AdminPages/Dashboard");
-                        }
-                    }
-
-
-                }
-                else
-                {
-                    Message = "Username does not exist!";
-                    return Page();
-                }
-
-
-
+                if (userRole.ToLower() == possibleRole) return userRole;
             }
+            return "Invalid role";
+        }
+
+        public static string checkStatus(string userStatus)
+        {
+            foreach (string possibleStatus in UserStatuses)
+            {
+                if (userStatus.ToLower() == possibleStatus) return userStatus;
+            }
+            return "Invalid status";
+        }
+
+        public static bool checkIfUsernameExists(string username)
+        {
+            foreach(KeyValuePair<string, string> value in accounts)
+            {
+                if (username == value.Key) return true;
+            }
+            return false;
+        }
+
+        public static bool checkPassword(string username, string password)
+        {
+            foreach (KeyValuePair<string, string> value in accounts)
+            {
+                if (username == value.Key)
+                    if (password == value.Value) return true;
+            }
+            return false;
         }
     }
 }
