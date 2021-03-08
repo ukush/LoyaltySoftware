@@ -9,14 +9,14 @@ namespace LoyaltySoftware.Models
     
     public class UserAccount
     {
-        public static int UserID { get; set; }
+        public int UserID { get; set; }
         [Required]
         [Display(Name = "User Name")]
         public string Username { get; set; }
         [Required]
         [Display(Name = "Password")]
         public string Password { get; set; }
-        public static string Status { get; set; }
+        public string Status { get; set; }
 
         public static string UserRole { get; set; }
 
