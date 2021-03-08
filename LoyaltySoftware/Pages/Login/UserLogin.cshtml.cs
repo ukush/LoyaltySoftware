@@ -25,13 +25,6 @@ namespace LoyaltySoftware.Pages.Login
 
         public IActionResult OnPost()
         {
-            string userRole = "";
-
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
-
             DBConnection dbstring = new DBConnection(); //creating an object from the class
             string DbConnection = dbstring.DatabaseString(); //calling the method from the class
             Console.WriteLine(DbConnection);
@@ -41,39 +34,53 @@ namespace LoyaltySoftware.Pages.Login
             Console.WriteLine(UserAccount.Username);
             Console.WriteLine(UserAccount.Password);
 
-
-            if (UserAccount.checkIfUsernameExists(UserAccount.Username))
+            if (string.IsNullOrEmpty(UserAccount.Username))
             {
-               SessionID = HttpContext.Session.Id;
-               HttpContext.Session.SetString("sessionID", SessionID);
-               HttpContext.Session.SetString("username", UserAccount.Username);
-               HttpContext.Session.SetString("password", UserAccount.Password);
-
-               if (!UserAccount.checkPassword(UserAccount.Username, UserAccount.Password))
-               {
-                   Message = "Password does not match!";
-                   return Page();
-               }
-               else
-               {
-                   if (UserAccount.checkRole(UserAccount.Username) == "member")
-                   {
-                      return RedirectToPage("/MemberPages/Dashboard");
-                   }
-                   else
-                   {
-                       return RedirectToPage("/AdminPages/Dashboard");
-                   }
-               }    
+                Message = "Please enter a username!";
+                return Page();
+            }
+            else if (string.IsNullOrEmpty(UserAccount.Password))
+            {
+                Message = "Please enter a password!";
+                return Page();
             }
             else
             {
-               Message = "Username does not exist!";
-               return Page();
+
+                if (UserAccount.checkIfUsernameExists(UserAccount.Username))
+                {
+                    SessionID = HttpContext.Session.Id;
+                    HttpContext.Session.SetString("sessionID", SessionID);
+                    HttpContext.Session.SetString("username", UserAccount.Username);
+                    HttpContext.Session.SetString("password", UserAccount.Password);
+
+                    if (!UserAccount.checkPassword(UserAccount.Username, UserAccount.Password))
+                    {
+                        Message = "Password does not match!";
+                        return Page();
+                    }
+                    else
+                    {
+                        if (UserAccount.checkRole(UserAccount.Username) == "member")
+                        {
+                            return RedirectToPage("/MemberPages/Dashboard");
+                        }
+                        else
+                        {
+                            return RedirectToPage("/AdminPages/Dashboard");
+                        }
+                    }
+                }
+                else
+                {
+                    Message = "Username does not exist!";
+                    return Page();
+                }
             }
 
             
         }
     }
 }
+
 
