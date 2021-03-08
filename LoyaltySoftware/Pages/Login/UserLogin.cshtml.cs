@@ -37,9 +37,8 @@ namespace LoyaltySoftware.Pages.Login
             using (SqlCommand command = new SqlCommand())
             {
                 command.Connection = conn;
-                command.CommandText = @"SELECT id, username, password, user_role FROM UserAccount WHERE id = @UID, username = @UName, password = @Pwd AND user_role = @URole";
+                command.CommandText = @"SELECT username, password, user_role FROM UserAccount WHERE username = @UName, password = @Pwd AND user_role = @URole";
 
-                command.Parameters.AddWithValue("@UID", UserAccount.UserID);
                 command.Parameters.AddWithValue("@UName", UserAccount.Username);
                 command.Parameters.AddWithValue("@Pwd", UserAccount.Password);
                 command.Parameters.AddWithValue("@URole", UserAccount.UserRole);
@@ -48,53 +47,44 @@ namespace LoyaltySoftware.Pages.Login
 
                 while (reader.Read())
                 {
-                    UserAccount.UserID = reader.GetInt32(0);
-                    UserAccount.Username = reader.GetString(1);
+                    UserAccount.Username = reader.GetString(0);
                     UserAccount.Password = reader.GetString(2);
                     UserAccount.UserRole = reader.GetString(3);
-                }
 
-                if (!string.IsNullOrEmpty(UserAccount.UserID.ToString()))
-                {
-                    SessionID = HttpContext.Session.Id;
-                    HttpContext.Session.SetString("sessionID", SessionID);
-                    HttpContext.Session.SetString("username", UserAccount.Username);
-                    HttpContext.Session.SetString("password", UserAccount.Password);
+                    if (UserAccount.checkIfUsernameExists(UserAccount.Username))
+                    {
+                        SessionID = HttpContext.Session.Id;
+                        HttpContext.Session.SetString("sessionID", SessionID);
+                        HttpContext.Session.SetString("username", UserAccount.Username);
+                        HttpContext.Session.SetString("password", UserAccount.Password);
 
-                    if (!UserAccount.checkIfUsernameExists(UserAccount.Username))
+                        if (!UserAccount.checkPassword(UserAccount.Username, UserAccount.Password))
+                        {
+                            Message = "Password does not match!";
+                            return Page();
+                        }
+                        else
+                        {
+                            if (UserAccount.checkRole(UserAccount.UserRole) == "member")
+                            {
+                                return RedirectToPage("/MemberPages/Dashboard");
+                            }
+                            else
+                            {
+                                return RedirectToPage("/AdminPages/Dashboard");
+                            }
+                        }
+                    }
+                    else
                     {
                         Message = "Username does not exist!";
                         return Page();
                     }
-                    else if (!UserAccount.checkPassword(UserAccount.Username, UserAccount.Password))
-                    {
-                        Message = "Password does not match!";
-                        return Page();
-                    }
-                    else
-                    {
-                        if (UserAccount.checkRole(UserAccount.UserRole) == "member")
-                        {
-                            return RedirectToPage("/MemberPages/Dashboard");
-                        }
-                        else
-                        {
-                            return RedirectToPage("/AdminPages/Dashboard");
-                        }
-                    }
+
 
 
                 }
-                else
-                {
-                    Message = "Username does not exist!";
-                    return Page();
-                }
-
-
-
             }
         }
     }
 }
-
