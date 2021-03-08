@@ -27,26 +27,66 @@ namespace LoyaltySoftware.Models
         static string[] UserRoles = new string[] { "member", "admin" };
         static string[] UserStatuses = new string[] { "active", "suspended", "revoked" };
 
-        public static string checkRole(string userRole)
+
+        public static string checkRole(string username)
         {
-            foreach(string possibleRole in UserRoles)
+            string userRole = "";
+
+            using (SqlCommand command = new SqlCommand())
             {
-                if (userRole.ToLower() == possibleRole) return userRole;
+                DBConnection dbstring = new DBConnection();      //creating an object from the class
+                string DbConnection = dbstring.DatabaseString(); //calling the method from the class
+                SqlConnection conn = new SqlConnection(DbConnection);
+                conn.Open();
+
+                command.Connection = conn;
+                command.CommandText = @"SELECT Username, UserRole FROM UserAccount WHERE Username = @UName";
+
+                command.Parameters.AddWithValue("@UName", username);
+
+                var reader = command.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    userRole = reader.GetString(1);
+                }
+
+                return userRole;
             }
-            return "Invalid role";
+
+        }
+        public static string checkStatus(string username)
+        {
+            string userStatus = "";
+
+            using (SqlCommand command = new SqlCommand())
+            {
+                DBConnection dbstring = new DBConnection();      //creating an object from the class
+                string DbConnection = dbstring.DatabaseString(); //calling the method from the class
+                SqlConnection conn = new SqlConnection(DbConnection);
+                conn.Open();
+
+                command.Connection = conn;
+                command.CommandText = @"SELECT Username, UserStatus FROM UserAccount WHERE Username = @UName";
+
+                command.Parameters.AddWithValue("@UName", username);
+
+                var reader = command.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    userStatus = reader.GetString(1);
+                }
+
+                return userStatus;
+            }
         }
 
-        public static string checkStatus(string userStatus)
-        {
-            foreach (string possibleStatus in UserStatuses)
-            {
-                if (userStatus.ToLower() == possibleStatus) return userStatus;
-            }
-            return "Invalid status";
-        }
+        
 
-        public static bool checkIfUsernameExists(string username)
+        public static bool checkIfUsernameExists(string inputUsername)
         {
+            string username="";
             using (SqlCommand command = new SqlCommand())
             {
                 DBConnection dbstring = new DBConnection();      //creating an object from the class
@@ -57,7 +97,7 @@ namespace LoyaltySoftware.Models
                 command.Connection = conn;
                 command.CommandText = @"SELECT Username FROM UserAccount WHERE Username = @UName";
 
-                command.Parameters.AddWithValue("@UName", username);
+                command.Parameters.AddWithValue("@UName", inputUsername);
 
                 var reader = command.ExecuteReader();
 
