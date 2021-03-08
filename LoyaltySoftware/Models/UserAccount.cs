@@ -1,6 +1,10 @@
+using LoyaltySoftware.Pages.Shared;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Data.Common;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -16,25 +20,12 @@ namespace LoyaltySoftware.Models
         [Required]
         [Display(Name = "Password")]
         public string Password { get; set; }
-        public string Status { get; set; }
+        public static string Status { get; set; }
 
-        public static string UserRole { get; set; }
+        public string UserRole { get; set; }
 
         static string[] UserRoles = new string[] { "member", "admin" };
         static string[] UserStatuses = new string[] { "active", "suspended", "revoked" };
-        public static Dictionary<string, string> accounts = new Dictionary<string, string>();
-
-        public static void AddAccount(string username, string password)
-        {
-            if(!accounts.ContainsKey(username))
-            {
-                accounts.Add(username, password);
-            }
-            else
-            {
-                Console.WriteLine("Username already exists.");
-            }
-        }
 
         public static string checkRole(string userRole)
         {
@@ -56,22 +47,74 @@ namespace LoyaltySoftware.Models
 
         public static bool checkIfUsernameExists(string username)
         {
-            foreach(KeyValuePair<string, string> value in accounts)
+            using (SqlCommand command = new SqlCommand())
             {
-                if (username == value.Key) return true;
+                DBConnection dbstring = new DBConnection();      //creating an object from the class
+                string DbConnection = dbstring.DatabaseString(); //calling the method from the class
+                SqlConnection conn = new SqlConnection(DbConnection);
+                conn.Open();
+
+                command.Connection = conn;
+                command.CommandText = @"SELECT Username FROM UserAccount WHERE Username = @UName";
+
+                command.Parameters.AddWithValue("@UName", username);
+
+                var reader = command.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    username = reader.GetString(0);
+                }
+
+                if (!string.IsNullOrEmpty(username))
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+
+
             }
-            return false;
         }
 
-        public static bool checkPassword(string username, string password)
+        public static bool checkPassword(string inputUsername, string inputPassword)
         {
-            foreach (KeyValuePair<string, string> value in accounts)
+            string password="";
+
+            using (SqlCommand command = new SqlCommand())
             {
-                if (username == value.Key)
-                    if (password == value.Value) return true;
+                DBConnection dbstring = new DBConnection();      //creating an object from the class
+                string DbConnection = dbstring.DatabaseString(); //calling the method from the class
+                SqlConnection conn = new SqlConnection(DbConnection);
+                conn.Open();
+
+                command.Connection = conn;
+                command.CommandText = @"SELECT Username, Password FROM UserAccount WHERE Username = @UName";
+
+                command.Parameters.AddWithValue("@UName", inputUsername);
+
+                var reader = command.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    password = reader.GetString(1);
+                }
+
+                if (inputPassword!=password)
+                {
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
+
+
             }
-            return false;
         }
     }
 }
+
 
