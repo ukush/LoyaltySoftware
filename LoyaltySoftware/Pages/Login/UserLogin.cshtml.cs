@@ -25,6 +25,11 @@ namespace LoyaltySoftware.Pages.Login
 
         public IActionResult OnPost()
         {
+            if (!ModelState.IsValid)
+            {
+                return Page();
+            }
+
             DBConnection dbstring = new DBConnection(); //creating an object from the class
             string DbConnection = dbstring.DatabaseString(); //calling the method from the class
             Console.WriteLine(DbConnection);
@@ -37,19 +42,19 @@ namespace LoyaltySoftware.Pages.Login
             using (SqlCommand command = new SqlCommand())
             {
                 command.Connection = conn;
-                command.CommandText = @"SELECT username, password, user_role FROM UserAccount WHERE username = @UName, password = @Pwd AND user_role = @URole";
+                command.CommandText = @"SELECT Username, Password, UserRole FROM UserAccount WHERE Username = @UName, Password = @Pwd AND UserRole = @URole";
 
                 command.Parameters.AddWithValue("@UName", UserAccount.Username);
                 command.Parameters.AddWithValue("@Pwd", UserAccount.Password);
-                command.Parameters.AddWithValue("@URole", UserAccount.UserRole);
 
                 var reader = command.ExecuteReader();
 
                 while (reader.Read())
                 {
                     UserAccount.Username = reader.GetString(0);
-                    UserAccount.Password = reader.GetString(2);
-                    UserAccount.UserRole = reader.GetString(3);
+                    UserAccount.Password = reader.GetString(1);
+                    UserAccount.UserRole = reader.GetString(2);
+                }
 
                     if (UserAccount.checkIfUsernameExists(UserAccount.Username))
                     {
@@ -83,8 +88,8 @@ namespace LoyaltySoftware.Pages.Login
 
 
 
-                }
             }
         }
     }
+}
 }
