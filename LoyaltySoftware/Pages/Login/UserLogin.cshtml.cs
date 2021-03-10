@@ -15,7 +15,8 @@ namespace LoyaltySoftware.Pages.Login
     {
         [BindProperty]
         public UserAccount UserAccount { get; set; }
-        public string Message { get; set; }
+        public string UsernameMessage { get; set; }
+        public string PasswordMessage { get; set; }
         public string SessionID;
 
 
@@ -36,12 +37,12 @@ namespace LoyaltySoftware.Pages.Login
 
             if (string.IsNullOrEmpty(UserAccount.Username))
             {
-                Message = "Please enter a username!";
+                UsernameMessage = "Please enter a username!";
                 return Page();
             }
             else if (string.IsNullOrEmpty(UserAccount.Password))
             {
-                Message = "Please enter a password!";
+                PasswordMessage = "Please enter a password!";
                 return Page();
             }
             else
@@ -56,7 +57,7 @@ namespace LoyaltySoftware.Pages.Login
 
                     if (!UserAccount.checkPassword(UserAccount.Username, UserAccount.Password))
                     {
-                        Message = "Password does not match!";
+                        PasswordMessage = "Password does not match!";
                         return Page();
                     }
                     else
@@ -73,7 +74,7 @@ namespace LoyaltySoftware.Pages.Login
                 }
                 else
                 {
-                    Message = "Username does not exist!";
+                    UsernameMessage = "Username does not exist!";
                     return Page();
                 }
             }
